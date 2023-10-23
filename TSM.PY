@@ -1,40 +1,37 @@
 import itertools
 
-def calculate_distance(city1, city2):
-    return abs(city1[0] - city2[0]) + abs(city1[1] - city2[1])
-
-def total_distance(path, cities):
-    total = 0
-    for i in range(len(path) - 1):
-        total += calculate_distance(cities[path[i]], cities[path[i+1]])
-    total += calculate_distance(cities[path[-1]], cities[path[0]])
-    return total
-
-def brute_force_tsp(cities):
-    num_cities = len(cities)
-    min_distance = float('inf')
-    best_path = []
-
-    for perm in itertools.permutations(range(num_cities)):
-        distance = total_distance(perm, cities)
-        if distance < min_distance:
-            min_distance = distance
-            best_path = perm
-
-    return best_path, min_distance
-
-def main():
-    num_cities = int(input("Enter the number of cities: "))
-    cities = []
-
+def calculate_total_distance(order, cities):
+    total_distance = 0
+    num_cities = len(order)
     for i in range(num_cities):
-        x, y = map(int, input(f"Enter the coordinates of city {i+1} (x y): ").split())
-        cities.append((x, y))
+        from_city = order[i]
+        to_city = order[(i + 1) % num_cities]
+        total_distance += cities[from_city][to_city]
+    return total_distance
 
-    best_path, min_distance = brute_force_tsp(cities)
+def traveling_salesman_bruteforce(cities):
+    num_cities = len(cities)
+    city_indices = list(range(num_cities))
+    best_order = None
+    best_distance = float('inf')
 
-    print("Best path:", "->".join(str(city) for city in best_path))
-    print("Minimum distance:", min_distance)
+    for order in itertools.permutations(city_indices):
+        total_distance = calculate_total_distance(order, cities)
+        if total_distance < best_distance:
+            best_distance = total_distance
+            best_order = order
 
-if _name_ == "_main_":
-    main()
+    return best_order, best_distance
+
+if __name__ == '__main__':
+    # Example usage
+    cities = [
+        [0, 29, 20, 21],
+        [29, 0, 15, 17],
+        [20, 15, 0, 28],
+        [21, 17, 28, 0]
+    ]
+    best_order, best_distance = traveling_salesman_bruteforce(cities)
+
+    print("Best order:", best_order)
+    print("Best distance:", best_distance)
