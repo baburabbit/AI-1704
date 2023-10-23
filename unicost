@@ -1,0 +1,57 @@
+from queue import PriorityQueue
+
+# Define the graph as a dictionary with node connections and their associated costs
+graph = {
+    'S': {'A': 1, 'B': 5},
+    'A': {'C': 3, 'D': 2},
+    'B': {'E': 4},
+    'C': {'G': 1},
+    'D': {'E': 2, 'G': 5},
+    'E': {'G': 3},
+    'G': {}
+}
+
+def uniform_cost_search(graph, start, goal):
+    frontier = PriorityQueue()
+    frontier.put((0, start))  # Priority queue with cost and node
+    came_from = {}  # Store the path
+    cost_so_far = {}  # Store the cost to reach each node
+
+    came_from[start] = None
+    cost_so_far[start] = 0
+
+    while not frontier.empty():
+        current_cost, current_node = frontier.get()
+
+        if current_node == goal:
+            break
+
+        for neighbor, cost in graph[current_node].items():
+            new_cost = cost_so_far[current_node] + cost
+            if neighbor not in cost_so_far or new_cost < cost_so_far[neighbor]:
+                cost_so_far[neighbor] = new_cost
+                priority = new_cost
+                frontier.put((priority, neighbor))
+                came_from[neighbor] = current_node
+
+    path = reconstruct_path(came_from, start, goal)
+    return path
+
+def reconstruct_path(came_from, start, goal):
+    current = goal
+    path = [current]
+    while current != start:
+        current = came_from[current]
+        path.append(current)
+    path.reverse()
+    return path
+
+start_node = 'S'
+goal_node = 'G'
+path = uniform_cost_search(graph, start_node, goal_node)
+
+if path:
+    print(f"Path from {start_node} to {goal_node}: {path}")
+    print(f"Total cost: {sum(graph[path[i]][path[i + 1]] for i in range(len(path) - 1)}")
+else:
+    print(f"No path found from {start_node} to {goal_node}")
