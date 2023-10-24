@@ -1,0 +1,32 @@
+% Define facts and rules
+% Facts
+bird(penguin).
+bird(sparrow).
+bird(parrot).
+can_fly(sparrow).
+can_sing(parrot).
+lay_eggs(penguin).
+
+% Rule 1: Birds that can fly are also birds that can sing.
+bird_can_sing(X) :-
+    bird(X),
+    can_sing(X).
+
+% Rule 2: Birds that lay eggs are also birds that can sing.
+bird_lay_eggs(X) :-
+    bird(X),
+    lay_eggs(X).
+bird_can_fly(X) :-
+    bird(X),
+    can_fly(X).
+
+% Forward Chaining
+forward_chaining :-
+    findall([X, Y], (is_a(X, Y), not(is_a(X, bird))), NewBirds),  % Find new bird facts
+    process_new_birds(NewBirds).
+
+process_new_birds([]).
+
+process_new_birds([[X, Y] | Rest]) :-
+    assertz(is_a(X, bird)),
+    process_new_birds(Rest).
