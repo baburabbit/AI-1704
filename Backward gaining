@@ -1,0 +1,40 @@
+% Define facts and rules
+
+% Facts
+bird(penguin).
+bird(sparrow).
+bird(parrot).
+can_fly(sparrow).
+can_sing(parrot).
+lay_eggs(penguin).
+
+% Rule 1: Birds that can fly are also birds that can sing.
+bird_can_sing(X) :-
+    bird(X),
+    can_sing(X).
+
+% Rule 2: Birds that lay eggs are also birds that can sing.
+bird_can_fly(X) :-
+    bird(X),
+    can_fly(X).
+
+bird_lay_eggs(X) :-
+    bird(X),
+    lay_eggs(X).
+
+
+% Backward Chaining
+backward_chaining(Goal) :-
+    Goal,  % Check if the goal is a fact.
+    write('Goal is already a fact: '), write(Goal), nl.
+
+backward_chaining(Goal) :-
+    clause(Goal, Body),  % Attempt to prove the goal using a rule.
+    write('Trying to prove: '), write(Goal), nl,
+    prove(Body).
+
+prove([]).
+
+prove([H | T]) :-
+    backward_chaining(H),  % Recursively prove each part of the body.
+    prove(T).
